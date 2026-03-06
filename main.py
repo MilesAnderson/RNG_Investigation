@@ -4,7 +4,7 @@ import math
 import scipy
 
 import algorithm1
-import freq_test
+import rng_tests
 
 '''
 #time Random
@@ -16,7 +16,8 @@ alg1_time = end - start
 print(alg1_time)
 '''
 
-x = algorithm1.Random(1000000)
-isRand, p_value = freq_test.freq_test(x)
-print(isRand)
+print(algorithm1.Random(5))
+
+isRandom, p_value = rng_tests.freq_test(algorithm1.Random(100))
+print(isRandom)
 print(p_value)
