@@ -1,2 +1,2 @@
 # RNG_Investigation
-Investigation of random number generation methodology.
+Investigation of random number generation algorithms.
