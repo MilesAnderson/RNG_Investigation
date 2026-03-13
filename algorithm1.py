@@ -18,7 +18,8 @@ def Random(n):
     bits = ""
     while i <= n:
         seed = (k * seed) % j
-        bits += format(seed, '031b')
+        width = seed.bit_length()
+        bits += format(seed, f'0{width}b')
         x.append(seed / j)
         i = i+1
     return bits, x
