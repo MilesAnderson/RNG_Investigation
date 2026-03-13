@@ -57,11 +57,17 @@ def runs(binaryString):
     binary_string = binaryString
     n = len(binary_string)
 
+    if n == 0:
+        return False, 0
+
     ones = 0
     for i in range (n):
         if (binary_string[i] == '1'):
             ones = ones + 1
     pi = ones / n
+
+    if pi == 0 or pi == 1:
+        return False, 0
 
     tau = 2 / math.sqrt(n)
     if (abs(pi - (1 / 2)) >= tau):
