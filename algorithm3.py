@@ -1,6 +1,14 @@
 import random
 
 def xorshift(n):
+    """
+    Generates n pseudo-random numbers using the XORShift generator.
+
+    Each iteration begins with a random seed between 1 and 2^31 − 1 and applies
+    a sequence of XOR and bit-shift operations to produce the next value in the
+    sequence. The function returns both the generated integers and a concatenated
+    binary representation of those values.
+    """
     ret = []
     bits = ""
     for _ in range (n):
