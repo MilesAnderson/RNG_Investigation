@@ -9,13 +9,13 @@ def middle_square(n):
     state. The function returns both the generated values and a concatenated
     binary representation of those values.
     """
-    seed = random.randint(1000, 9999)
+    seed = random.randint(100000, 999999)
     number = seed
     bits = ""
     number_list = []
 
     for _ in range(n):
-        number = (int(str(number * number).zfill(8)[2:6]))
+        number = (int(str(number * number).zfill(12)[3:9]))
         number_list.append(number)
         # width = number.bit_length()
         # bits += format(number, f'0{width}b')

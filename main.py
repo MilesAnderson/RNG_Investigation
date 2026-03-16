@@ -11,7 +11,7 @@ import rng_tests
 
 # modify vars
 iterations = 100 # Number of times to run RNG tests
-# n = 10000 # sequence length
+n = 1000 # sequence length
 
 algorithms = {
     "Park-Miller": algorithm1.park_miller,
@@ -27,7 +27,7 @@ tests = {
 }
 
 
-def pass_rate(passed, total_iter = 100):
+def pass_rate(passed, total_iter):
     '''
     Short helper function for computing the pass rate of 
     a given algorithm on a given RNG test.
@@ -36,7 +36,7 @@ def pass_rate(passed, total_iter = 100):
 
 
 # generalized algorithm tester
-def test_algo(algorithm, iterations = 100, n = 100):
+def test_algo(algorithm, iterations = 100, n = 10000):
     results = {name: 0 for name in tests}
     for _ in range(iterations):
         bitstring, _ = algorithm(n)
@@ -59,23 +59,51 @@ def measure_runtime(generator, n=1000, trials=50):
 
     return total / trials
 
+# pretty print
+def print_results(name, results, runtime, iterations):
+    print(f"{name:^30}")
+    print("-" * 30)
+
+    for test, passed in results.items():
+        rate = pass_rate(passed, iterations)
+        print(f"   {test:<12} : {rate:6.1f}%")
+
+    print("-" * 30)
+    print(f"{'Average runtime':<12} : {runtime:.6f} s")
+    print()
 
 
 # main func
 def main():
-    # test all algos
-    for name, generator in algorithms.items():
-        results = test_algo(generator, iterations)
-        print("---------", name, "---------")
-        for test_name, passed in results.items():
-            print("\t", test_name, ":", pass_rate(passed, iterations), "%")
-        print("----------------------------------")
-        print()
+    print("*********** RESULTS **********")
+    print(f"*{f'Iterations: {iterations}':^28}*")
+    print(f"*{f'Sequence Length: {n}':^28}*")
+    # print("     Iterations:", iterations)
+    # print("   Sequence Length:", n)
+    print("*" * 30)
+    print()
 
-    # time all algos
-    for name, generator in algorithms.items():
-        t = measure_runtime(generator)
-        print(name, "average runtime:", t)
+    # test & time all algos
+    for name, algorithm in algorithms.items():
+        results = test_algo(algorithm, iterations, n)
+        t = measure_runtime(algorithm, n)
+
+        print_results(name, results, t, iterations)
+
+        # print("-------\t", name, "\t-------")
+        # for test_name, passed in results.items():
+        #     print("    ", test_name, ":", pass_rate(passed, iterations), "%")
+
+        # t = measure_runtime(algorithm, n)
+        # print("    -----------------------")
+        # print("     Average runtime:", t)
+        # print("-------------------------------")
+        # print()
+
+    # # time all algos
+    # for name, generator in algorithms.items():
+    #     t = measure_runtime(generator, n)
+    #     print(name, "average runtime:", t)
 
 
 
