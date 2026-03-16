@@ -1,9 +1,6 @@
 import time
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
-import math
-import scipy
 
 import algorithm1
 import algorithm2
@@ -129,8 +126,6 @@ def main():
     testresults_dict = {}
     times_dict = {}
 
-    # stored_results = {}
-
     #header
     print()
     print("*********** RESULTS **********")
@@ -145,59 +140,18 @@ def main():
         results = test_algo(algorithm, iterations, n)
         t = measure_runtime(algorithm, n)
 
-        # # append a dictionary of results for each algo to list
-        # stored_results.append({
-        #     "Algorithm": name,
-        #     "Frequency": pass_rate(results["Frequency"], iterations),
-        #     "Runs": pass_rate(results["Runs"], iterations),
-        #     "Serial": pass_rate(results["Serial"], iterations),
-        #     "Runtime": t
-        # })
-
+        # add results to dictionaries
         testresults_dict[name] = {
             test: pass_rate(passed, iterations) for test, passed in results.items()
         }
-
         times_dict[name] = t
 
         # pretty print test results & runtime for each algo
         print_results(name, results, t, iterations)
 
     # plots
-    # plt.style.use("seaborn-v0_8")
     plot_tests(testresults_dict)
     plot_runtime(times_dict)
-
-    # # construct pandas data frame
-    # df = pd.DataFrame(stored_results)
-    # print(df)
-
-    # tests = ["Frequency", "Runs", "Serial"]
-
-    # #plot algos vs test results
-    # df.set_index("Algorithm")[tests].plot(kind="bar", color=["#1c3144", "#d00000", "#ffba08"])
-
-    # plt.title(f'Randomness Pass Rates of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
-    # plt.ylabel("Pass Rate (%)")
-    # plt.xlabel("Algorithm")
-    # plt.xticks(rotation=0)
-    # plt.legend(loc="upper left", bbox_to_anchor=(1,1), title="Test")
-
-    # plt.tight_layout()
-    # plt.show()
-
-    # plt.figure()
-
-    # # plot algos vs runtimes
-    # plt.bar(df["Algorithm"], df["Runtime"], color="#78a1bb")
-
-    # plt.title(f'Runtimes of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
-    # plt.ylabel("Average Runtime (s)")
-    # plt.xlabel("Algorithm")
-
-    # plt.xticks(rotation=0)
-    # plt.tight_layout()
-    # plt.show()
 
 
 
