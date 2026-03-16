@@ -45,7 +45,8 @@ def hmac_drbg(n):
         value = int.from_bytes(V, byteorder='big')
         ret.append(value)
 
-        width = value.bit_length()
-        bits += format(value, f'0{width}b')
+        # width = value.bit_length()
+        # bits += format(value, f'0{width}b')
+        bits += format(value, '0256b') # 256 bits for SHA256
 
     return bits, ret

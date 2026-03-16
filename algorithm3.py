@@ -16,8 +16,9 @@ def xorshift(n):
         seed ^= seed << 13
         seed ^= seed >> 17
         seed ^= seed << 5
-        width = seed.bit_length()
-        bits += format(seed, f'0{width}b')
+        # width = seed.bit_length()
+        # bits += format(seed, f'0{width}b')
+        bits += format(seed, '031b') # 31 bit width for numbers between 0 and 2^31-1
         ret.append(seed)
 
     return bits, ret

@@ -10,7 +10,7 @@ import algorithm4
 import rng_tests
 
 # modify vars
-# iterations = 10000 # Number of times to run RNG tests
+iterations = 100 # Number of times to run RNG tests
 # n = 10000 # sequence length
 
 algorithms = {
@@ -36,7 +36,7 @@ def pass_rate(passed, total_iter = 100):
 
 
 # generalized algorithm tester
-def test_algo(algorithm, iterations = 100, n = 10000):
+def test_algo(algorithm, iterations = 100, n = 100):
     results = {name: 0 for name in tests}
     for _ in range(iterations):
         bitstring, _ = algorithm(n)
@@ -65,11 +65,11 @@ def measure_runtime(generator, n=1000, trials=50):
 def main():
     # test all algos
     for name, generator in algorithms.items():
-        results = test_algo(generator)
-        print("-------------------", name, "-------------------")
+        results = test_algo(generator, iterations)
+        print("---------", name, "---------")
         for test_name, passed in results.items():
-            print("\t", test_name, ":", pass_rate(passed), "%")
-        print("---------------------------------------------------")
+            print("\t", test_name, ":", pass_rate(passed, iterations), "%")
+        print("----------------------------------")
         print()
 
     # time all algos
