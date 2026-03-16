@@ -1,5 +1,7 @@
 import time
 import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
 import math
 import scipy
 
@@ -11,7 +13,7 @@ import rng_tests
 
 # modify vars
 iterations = 100 # Number of times to run RNG tests
-n = 1000 # sequence length
+n = 100 # sequence length
 
 algorithms = {
     "Park-Miller": algorithm1.park_miller,
@@ -35,8 +37,8 @@ def pass_rate(passed, total_iter):
     return (passed / total_iter) * 100
 
 
-# generalized algorithm tester
-def test_algo(algorithm, iterations = 100, n = 10000):
+# generalized algorithm randomness tester
+def test_algo(algorithm, iterations, n):
     results = {name: 0 for name in tests}
     for _ in range(iterations):
         bitstring, _ = algorithm(n)
@@ -47,8 +49,8 @@ def test_algo(algorithm, iterations = 100, n = 10000):
                 results[test_name] += 1
     return results
 
-#generalized run timer (average of many runs)
-def measure_runtime(generator, n=1000, trials=50):
+#generalized run timer (average of many runs - picked 50 to reduce random fluctuation)
+def measure_runtime(generator, n, trials=50):
     total = 0
 
     for _ in range(trials):
@@ -59,7 +61,7 @@ def measure_runtime(generator, n=1000, trials=50):
 
     return total / trials
 
-# pretty print
+# pretty print func
 def print_results(name, results, runtime, iterations):
     print(f"{name:^30}")
     print("-" * 30)
@@ -72,38 +74,131 @@ def print_results(name, results, runtime, iterations):
     print(f"{'Average runtime':<12} : {runtime:.6f} s")
     print()
 
+# plot test results func
+def plot_tests(results_dict):
+
+    algorithms = list(results_dict.keys())
+
+    frequency = [results_dict[algo]["Frequency"] for algo in algorithms]
+    runs = [results_dict[algo]["Runs"] for algo in algorithms]
+    serial = [results_dict[algo]["Serial"] for algo in algorithms]
+
+    x = np.arange(len(algorithms))
+    width = 0.25
+
+    plt.figure(figsize=(8,5))
+
+    plt.bar(x - width, frequency, width, label="Frequency", color="#1c3144")
+    plt.bar(x, runs, width, label="Runs", color="#d00000")
+    plt.bar(x + width, serial, width, label="Serial", color="#ffba08")
+
+    plt.xticks(x, algorithms)
+    plt.xlabel("Algorithm")
+    plt.ylabel("Pass Rate (%)")
+    plt.title(f'Randomness Pass Rates of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
+
+    plt.legend(title="Test", loc="center right")
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    plt.tight_layout()
+    plt.show()
+
+# plot runtimes func
+def plot_runtime(runtimes_dict):
+
+    algorithms = list(runtimes_dict.keys())
+    runtimes = list(runtimes_dict.values())
+
+    plt.figure(figsize=(8,5))
+
+    plt.bar(algorithms, runtimes, color="#78a1bb")
+
+    plt.xlabel("Algorithm")
+    plt.ylabel("Average Runtime (s)")
+    plt.title(f'Runtimes of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
+
+    plt.grid(axis="y", linestyle="--", alpha=0.7)
+
+    plt.tight_layout()
+    plt.show()
+
 
 # main func
 def main():
+    # store results for plotting
+    testresults_dict = {}
+    times_dict = {}
+
+    # stored_results = {}
+
+    #header
+    print()
     print("*********** RESULTS **********")
     print(f"*{f'Iterations: {iterations}':^28}*")
     print(f"*{f'Sequence Length: {n}':^28}*")
-    # print("     Iterations:", iterations)
-    # print("   Sequence Length:", n)
     print("*" * 30)
     print()
 
-    # test & time all algos
+    # loop over algos
     for name, algorithm in algorithms.items():
+        # test randomness + time algo
         results = test_algo(algorithm, iterations, n)
         t = measure_runtime(algorithm, n)
 
+        # # append a dictionary of results for each algo to list
+        # stored_results.append({
+        #     "Algorithm": name,
+        #     "Frequency": pass_rate(results["Frequency"], iterations),
+        #     "Runs": pass_rate(results["Runs"], iterations),
+        #     "Serial": pass_rate(results["Serial"], iterations),
+        #     "Runtime": t
+        # })
+
+        testresults_dict[name] = {
+            test: pass_rate(passed, iterations) for test, passed in results.items()
+        }
+
+        times_dict[name] = t
+
+        # pretty print test results & runtime for each algo
         print_results(name, results, t, iterations)
 
-        # print("-------\t", name, "\t-------")
-        # for test_name, passed in results.items():
-        #     print("    ", test_name, ":", pass_rate(passed, iterations), "%")
+    # plots
+    # plt.style.use("seaborn-v0_8")
+    plot_tests(testresults_dict)
+    plot_runtime(times_dict)
 
-        # t = measure_runtime(algorithm, n)
-        # print("    -----------------------")
-        # print("     Average runtime:", t)
-        # print("-------------------------------")
-        # print()
+    # # construct pandas data frame
+    # df = pd.DataFrame(stored_results)
+    # print(df)
 
-    # # time all algos
-    # for name, generator in algorithms.items():
-    #     t = measure_runtime(generator, n)
-    #     print(name, "average runtime:", t)
+    # tests = ["Frequency", "Runs", "Serial"]
+
+    # #plot algos vs test results
+    # df.set_index("Algorithm")[tests].plot(kind="bar", color=["#1c3144", "#d00000", "#ffba08"])
+
+    # plt.title(f'Randomness Pass Rates of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
+    # plt.ylabel("Pass Rate (%)")
+    # plt.xlabel("Algorithm")
+    # plt.xticks(rotation=0)
+    # plt.legend(loc="upper left", bbox_to_anchor=(1,1), title="Test")
+
+    # plt.tight_layout()
+    # plt.show()
+
+    # plt.figure()
+
+    # # plot algos vs runtimes
+    # plt.bar(df["Algorithm"], df["Runtime"], color="#78a1bb")
+
+    # plt.title(f'Runtimes of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
+    # plt.ylabel("Average Runtime (s)")
+    # plt.xlabel("Algorithm")
+
+    # plt.xticks(rotation=0)
+    # plt.tight_layout()
+    # plt.show()
+
 
 
 
@@ -111,111 +206,4 @@ if __name__ == "__main__":
     main()
 
 
-
-# #Testing Algorithm 1
-# alg1_freq_passed = 0
-# alg1_runs_passed = 0
-# alg1_serial_passed = 0
-# for _ in range(iterations):
-#     alg1_bitString, _ = algorithm1.park_miller(10)
-#     alg1_freq_isRand, _ = rng_tests.freq(alg1_bitString)
-#     alg1_runs_isRand, _ = rng_tests.runs(alg1_bitString)
-#     alg1_serial_isRand, _, _ = rng_tests.serial(alg1_bitString)
-#     if (alg1_freq_isRand == True):
-#         alg1_freq_passed += 1
-#     if (alg1_runs_isRand == True):
-#         alg1_runs_passed += 1
-#     if(alg1_serial_isRand == True):
-#         alg1_serial_passed += 1
-# print("algorithm 1 is random per frequency test: ", passRate(alg1_freq_passed, iterations), "%", " of the time")
-# print("algorithm 1 is random per runs test: ", passRate(alg1_runs_passed, iterations), "%", " of the time")
-# print("algorithm 1 is random per serial test: ", passRate(alg1_serial_passed, iterations), "%", " of the time")
-# print()
-
-# #Testing Algorithm 2
-# alg2_freq_passed = 0
-# alg2_runs_passed = 0
-# alg2_serial_passed = 0
-# for _ in range(iterations):
-#     alg2_bitString, _ = algorithm2.middle_square(10)
-#     alg2_freq_isRand, _ = rng_tests.freq(alg2_bitString)
-#     alg2_runs_isRand, _ = rng_tests.runs(alg2_bitString)
-#     alg2_serial_isRand, _, _ = rng_tests.serial(alg2_bitString)
-#     if (alg2_freq_isRand == True):
-#         alg2_freq_passed += 1
-#     if (alg2_runs_isRand == True):
-#         alg2_runs_passed += 1
-#     if (alg2_serial_isRand == True):
-#         alg2_serial_passed += 1
-# print("algorithm 2 is random per frequency test: ", passRate(alg2_freq_passed, iterations), "%", " of the time")
-# print("algorithm 2 is random per runs test: ", passRate(alg2_runs_passed, iterations), "%", " of the time")
-# print("algorithm 2 is random per serial test: ", passRate(alg2_serial_passed, iterations), "%", " of the time")
-# print()
-
-# #Testing Algorithm 3
-# alg3_freq_passed = 0
-# alg3_runs_passed = 0
-# alg3_serial_passed = 0
-# for _ in range(iterations):
-#     alg3_bitString, _ = algorithm3.xorshift(10)
-#     alg3_freq_isRand, _ = rng_tests.freq(alg3_bitString)
-#     alg3_runs_isRand, _ = rng_tests.runs(alg3_bitString)
-#     alg3_serial_isRand, _, _ = rng_tests.serial(alg3_bitString)
-#     if (alg3_freq_isRand == True):
-#         alg3_freq_passed += 1
-#     if (alg3_runs_isRand == True):
-#         alg3_runs_passed += 1
-#     if (alg3_serial_isRand == True):
-#         alg3_serial_passed += 1
-# print("algorithm 3 is random per frequency test: ", passRate(alg3_freq_passed, iterations), "%", " of the time")
-# print("algorithm 3 is random per runs test: ", passRate(alg3_runs_passed, iterations), "%", " of the time")
-# print("algorithm 3 is random per serial test: ", passRate(alg3_serial_passed, iterations), "%", " of the time")
-# print()
-
-# #Testing Algorithm 4
-# alg4_freq_passed = 0
-# alg4_runs_passed = 0
-# alg4_serial_passed = 0
-# for _ in range(iterations):
-#     alg4_bitString, _ = algorithm4.hmac_drbg(10)
-#     alg4_freq_isRand, _ = rng_tests.freq(alg4_bitString)
-#     alg4_runs_isRand, _ = rng_tests.runs(alg4_bitString)
-#     alg4_serial_isRand, _, _ = rng_tests.serial(alg4_bitString)
-#     if(alg4_freq_isRand == True):
-#         alg4_freq_passed += 1
-#     if(alg4_runs_isRand == True):
-#         alg4_runs_passed += 1
-#     if(alg4_serial_isRand == True):
-#         alg4_serial_passed += 1
-# print("algorithm 4 is random per frequency test: ", passRate(alg4_freq_passed, iterations), "%", " of the time")
-# print("algorithm 4 is random per runs test: ", passRate(alg4_runs_passed, iterations), "%", " of the time")
-# print("algorithm 4 is random per serial test: ", passRate(alg4_serial_passed, iterations), "%", " of the time")
-# print()
-
-
-
-# #Timing
-# start = time.time()
-# algorithm1.park_miller(1000)
-# end = time.time()
-# alg1_time = end - start
-# print("Algorithm 1 time: ", alg1_time)
-
-# start = time.time()
-# algorithm2.middle_square(1000)
-# end = time.time()
-# alg2_time = end - start
-# print("Algorithm 2 time: ", alg2_time)
-
-# start = time.time()
-# algorithm3.xorshift(1000)
-# end = time.time()
-# alg3_time = end - start
-# print("Algorithm 3 time: ", alg3_time)
-
-# start = time.time()
-# algorithm4.hmac_drbg(1000)
-# end = time.time()
-# alg4_time = end - start
-# print("Algorithm 4 time: ", alg4_time)
 

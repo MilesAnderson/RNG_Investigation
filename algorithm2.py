@@ -17,8 +17,7 @@ def middle_square(n):
     for _ in range(n):
         number = (int(str(number * number).zfill(12)[3:9]))
         number_list.append(number)
-        # width = number.bit_length()
-        # bits += format(number, f'0{width}b')
+        
         bits += format(number, '014b') # 4 digit numbers ~ 14 bits
        
     return bits, number_list

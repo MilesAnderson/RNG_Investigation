@@ -18,10 +18,9 @@ def park_miller(n):
     bits = ""
     while i <= n:
         seed = (k * seed) % j
-        # width = seed.bit_length()
-        # bits += format(seed, f'0{width}b')
+
         bits += format(seed, '031b') # 31 bit width for numbers between 0 and 2^31-1
         x.append(seed / j)
-        i = i+1
+        i += 1
     return bits, x
     
