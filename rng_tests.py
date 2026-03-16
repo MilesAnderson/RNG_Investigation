@@ -18,7 +18,7 @@ def floatList_to_binaryString(x):
     binary_string = "".join(map(str, binary_string))
     return binary_string
 
-def freq_test(binaryString):
+def freq(binaryString):
     """
     Performs a monobit frequency test on a binary string.
 

@@ -1,7 +1,7 @@
 
 import random
 
-def Random(n):
+def park_miller(n):
     """
     Generates n pseudo-random numbers using the Park–Miller linear congruential generator.
     
