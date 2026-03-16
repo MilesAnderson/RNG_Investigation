@@ -29,13 +29,8 @@ def freq(binaryString):
     """
     binary_string = binaryString
 
-    S_n = 0
     n = len(binary_string)
-    for i in range (n):
-        if (binary_string[i] == '1'):
-            S_n = S_n + 1
-        else:
-            S_n = S_n - 1
+    S_n = binary_string.count('1') - binary_string.count('0')
 
     s_obs = abs(S_n) / math.sqrt(n)
 
@@ -62,10 +57,7 @@ def runs(binaryString):
     if n == 0:
         return False, 0
 
-    ones = 0
-    for i in range (n):
-        if (binary_string[i] == '1'):
-            ones = ones + 1
+    ones = binary_string.count('1')
     pi = ones / n
 
     if pi == 0 or pi == 1:
@@ -75,10 +67,7 @@ def runs(binaryString):
     if (abs(pi - (1 / 2)) >= tau):
         return False, 0
 
-    V_n = 1
-    for i in range (n-1):
-        if (binary_string[i] != binary_string[i+1]):
-            V_n = V_n + 1
+    V_n = 1 + sum(binary_string[i] != binary_string[i+1] for i in range(n-1))
 
     numerator = V_n - (2 * n * pi * (1 - pi))
     denominator = 2 * math.sqrt(2 * n) * pi * (1 - pi)

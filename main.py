@@ -10,7 +10,7 @@ import rng_tests
 
 # modify vars
 iterations = 100 # Number of times to run RNG tests
-n = 100 # sequence length
+n = 1000 # sequence length
 
 algorithms = {
     "Park-Miller": algorithm1.park_miller,
@@ -68,7 +68,7 @@ def print_results(name, results, runtime, iterations):
         print(f"   {test:<12} : {rate:6.1f}%")
 
     print("-" * 30)
-    print(f"{'Average runtime':<12} : {runtime:.6f} s")
+    print(f"{'Average runtime':<12} : {runtime*1000:.6f} ms")
     print()
 
 # plot test results func
@@ -108,10 +108,10 @@ def plot_runtime(runtimes_dict):
 
     plt.figure(figsize=(8,5))
 
-    plt.bar(algorithms, runtimes, color="#78a1bb")
+    plt.bar(algorithms, [t*1000 for t in runtimes], color="#78a1bb") # conv to ms
 
     plt.xlabel("Algorithm")
-    plt.ylabel("Average Runtime (s)")
+    plt.ylabel("Average Runtime (ms)")
     plt.title(f'Runtimes of PRNG Algorithms\n(Iterations = {iterations}, Sequence Length = {n})')
 
     plt.grid(axis="y", linestyle="--", alpha=0.7)
